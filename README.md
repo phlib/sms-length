@@ -14,9 +14,24 @@ composer require phlib/sms-length
 
 ## Usage
 
+Simple string which fits within GSM 03.38 7-bit alphabet:
+
 ```php
 $smsLength = new \Phlib\SmsLength\SmsLength('simple message');
 $smsLength->getSize(); // 14
+$smsLength->getEncoding(); // '7-bit'
+$smsLength->getMessageCount(); // 1
+$smsLength->getUpperBreakpoint(); // 160
+```
+
+Message which contains characters forcing switch to using GSM 03.38 UCS-2:
+
+```php
+$smsLength = new \Phlib\SmsLength\SmsLength('message with • char requiring UCS-2');
+$smsLength->getSize(); // 35
+$smsLength->getEncoding(); // 'ucs-2'
+$smsLength->getMessageCount(); // 1
+$smsLength->getUpperBreakpoint(); // 70
 ```
 
 ## License

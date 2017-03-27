@@ -1,0 +1,86 @@
+<?php
+
+namespace Phlib\SmsLength;
+
+class SmsLengthTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @see https://en.wikipedia.org/wiki/GSM_03.38
+     * @var string[] Printable characters in GSM 03.38 7-bit default alphabet
+     *               0x1B deliberately excluded as it's used to escape to extension table
+     */
+    const GSM0338_BASIC =
+        '@'  . 'Δ' . ' ' . '0' . '¡' . 'P' . '¿' . 'p' .
+        '£'  . '_' . '!' . '1' . 'A' . 'Q' . 'a' . 'q' .
+        '$'  . 'Φ' . '"' . '2' . 'B' . 'R' . 'b' . 'r' .
+        '¥'  . 'Γ' . '#' . '3' . 'C' . 'S' . 'c' . 's' .
+        'è'  . 'Λ' . '¤' . '4' . 'D' . 'T' . 'd' . 't' .
+        'é'  . 'Ω' . '%' . '5' . 'E' . 'U' . 'e' . 'u' .
+        'ù'  . 'Π' . '&' . '6' . 'F' . 'V' . 'f' . 'v' .
+        'ì'  . 'Ψ' . "'" . '7' . 'G' . 'W' . 'g' . 'w' .
+        'ò'  . 'Σ' . '(' . '8' . 'H' . 'X' . 'h' . 'x' .
+        'Ç'  . 'Θ' . ')' . '9' . 'I' . 'Y' . 'i' . 'y' .
+        "\n" . 'Ξ' . '*' . ':' . 'J' . 'Z' . 'j' . 'z' .
+        'Ø'        . '+' . ';' . 'K' . 'Ä' . 'k' . 'ä' .
+        'ø'  . 'Æ' . ',' . '<' . 'L' . 'Ö' . 'l' . 'ö' .
+        "\r" . 'æ' . '-' . '=' . 'M' . 'Ñ' . 'm' . 'ñ' .
+        'Å'  . 'ß' . '.' . '>' . 'N' . 'Ü' . 'n' . 'ü' .
+        'å'  . 'É' . '/' . '?' . 'O' . '§' . 'o' . 'à'
+    ;
+
+    /**
+     * @see https://en.wikipedia.org/wiki/GSM_03.38
+     * @var string[] Printable characters in GSM 03.38 7-bit extension table
+     */
+    const GSM0338_EXTENDED = '|^€{}[~]\\';
+
+    /**
+     * @dataProvider providerSize
+     * @param string $content
+     * @param string $encoding
+     * @param int $characters
+     * @param int $messageCount
+     * @param int $upperBreak
+     */
+    public function testSize($content, $encoding, $characters, $messageCount, $upperBreak)
+    {
+        $size = new SmsLength($content);
+
+        $this->assertSame($encoding, $size->getEncoding());
+        $this->assertSame($characters, $size->getSize());
+        $this->assertSame($messageCount, $size->getMessageCount());
+        $this->assertSame($upperBreak, $size->getUpperBreakpoint());
+    }
+
+    public function providerSize()
+    {
+        return [
+            [self::GSM0338_BASIC, '7-bit', 127, 1, 160],
+            [self::GSM0338_EXTENDED, '7-bit', 18, 1, 160],
+            ['simple msg', '7-bit', 10, 1, 160],
+            ['simple msg plus € extended char', '7-bit', 32, 1, 160],
+
+            // http://www.fileformat.info/info/unicode/char/2022/index.htm
+            ['simple msg plus • 1 UTF-16 code unit char', 'ucs-2', 41, 1, 70],
+
+            // http://www.fileformat.info/info/unicode/char/1f4f1/index.htm
+            ["simple msg plus \xf0\x9f\x93\xb1 2 UTF-16 code unit char", 'ucs-2', 42, 1, 70],
+
+            // long 7-bit
+            [str_repeat('simple msg', 50), '7-bit', 500, 4, 612],
+            [str_repeat('exact max', 153), '7-bit', 1377, 9, 1377],
+
+            // long 7-bit extended
+            [str_repeat(self::GSM0338_EXTENDED, 40), '7-bit', 720, 5, 765],
+            [str_repeat(self::GSM0338_EXTENDED, 76), '7-bit', 1368, 9, 1377],
+
+            // long UCS-2
+            [str_repeat("simple msg plus •", 20), 'ucs-2', 340, 6, 402],
+            [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 20), 'ucs-2', 360, 6, 402],
+            [str_repeat("exact•max", 67), 'ucs-2', 603, 9, 603],
+
+            // empty
+            ['', '7-bit', 0, 1, 160]
+        ];
+    }
+}
