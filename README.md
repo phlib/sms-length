@@ -15,7 +15,8 @@ composer require phlib/sms-length
 ## Usage
 
 ```php
-// TBC
+$smsLength = new \Phlib\SmsLength\SmsLength('simple message');
+$smsLength->getSize(); // 14
 ```
 
 ## License
