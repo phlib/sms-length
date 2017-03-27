@@ -2,6 +2,8 @@
 
 namespace Phlib\SmsLength;
 
+use Phlib\SmsLength\Exception\InvalidArgumentException;
+
 class SmsLengthTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -81,6 +83,36 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
 
             // empty
             ['', '7-bit', 0, 1, 160]
+        ];
+    }
+
+    /**
+     * @dataProvider providerTooLarge
+     * @param string $content
+     * @medium Expect tests to take >1 but <10
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Message size exceeds maximum
+     */
+    public function testTooLarge($content)
+    {
+        new SmsLength($content);
+    }
+
+    public function providerTooLarge()
+    {
+        // 7-bit max is 39,015 (255 * 153)
+        // ucs-2 max is 17,085 (255 * 67)
+        return [
+            // long 7-bit, 10 * 3902 = 39020
+            [str_repeat('simple msg', 3902)],
+
+            // long 7-bit extended, 18 * 2168 = 39024
+            [str_repeat(self::GSM0338_EXTENDED, 2168)],
+
+            // long UCS-2 single, 17 * 1006 = 17,102
+            // long UCS-2 double, 18 * 950 = 17,100
+            [str_repeat("simple msg plus •", 1006)],
+            [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950)]
         ];
     }
 }
