@@ -6,6 +6,8 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/phlib/sms-length.svg?style=flat-square)](https://packagist.org/packages/phlib/sms-length)
 ![Licence](https://img.shields.io/github/license/phlib/sms-length.svg?style=flat-square)
 
+Calculate SMS GSM 03.38 message encoding and length, and number of concatenated SMS required
+
 ## Installation
 
 ```php
