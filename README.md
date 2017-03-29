@@ -36,6 +36,28 @@ $smsLength->getMessageCount(); // 1
 $smsLength->getUpperBreakpoint(); // 70
 ```
 
+## Background
+
+In the course of adding an SMS module to our Commercial software, we have found
+need for the SMS length properties which we've included in this package.
+
+Our third-party SMS gateway provider's API will of course error if the message
+length exceeds the maximum allowed, and handles the correct concatenation and
+encoding for the given UTF-8 string.
+
+However we want to be able to inform our users of message size and limits while
+they're building their SMS campaign (in advance of a live send). Plus we also
+need to show how many concatenated SMS they will use per contact, and therefore
+indicate pricing.
+
+The unit tests and inspections made by this package are based on
+[GSM 03.38 / 3GPP 23.038](https://en.wikipedia.org/wiki/GSM_03.38) for encoding
+and [GSM 03.40 / 3GPP 23.040](https://en.wikipedia.org/wiki/GSM_03.38) for
+[concatenated SMS](https://en.wikipedia.org/wiki/Concatenated_SMS). We have also
+referred to documentation provided by third-party SMS gateway providers such as
+[MessageBird](http://support.messagebird.com/hc/en-us/articles/208739745-How-long-can-a-text-message-be-)
+and [Messente](http://messente.com/documentation/tools/sms-length-calculator).
+
 ## License
 
 This package is free software: you can redistribute it and/or modify
