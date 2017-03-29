@@ -83,7 +83,7 @@ class SmsLength
     /**
      * Constructor
      *
-     * @param string $messageContent
+     * @param string $messageContent SMS message content (UTF-8)
      * @throws InvalidArgumentException
      */
     public function __construct($messageContent)
@@ -160,9 +160,9 @@ class SmsLength
         // Any character outside the 7-bit alphabet switches the entire encoding to UCS-2
         $this->encoding = '7-bit';
         $this->size = 0;
-        $mbLength = mb_strlen($messageContent);
+        $mbLength = mb_strlen($messageContent, 'UTF-8');
         for ($i = 0; $i < $mbLength; $i++) {
-            $char = mb_substr($messageContent, $i, 1);
+            $char = mb_substr($messageContent, $i, 1, 'UTF-8');
             if (in_array($char, self::GSM0338_BASIC)) {
                 $this->size++;
             } elseif (in_array($char, self::GSM0338_EXTENDED)) {
@@ -178,8 +178,8 @@ class SmsLength
             // Those with two UTF-16 code points consume two characters in the SMS
             $this->size = 0;
             for ($i = 0; $i < $mbLength; $i++) {
-                $char = mb_substr($messageContent, $i, 1);
-                $utf16Hex = bin2hex(mb_convert_encoding($char, 'UTF-16'));
+                $char = mb_substr($messageContent, $i, 1, 'UTF-8');
+                $utf16Hex = bin2hex(mb_convert_encoding($char, 'UTF-16', 'UTF-8'));
                 $this->size += strlen($utf16Hex) / 4;
             }
         }
