@@ -89,30 +89,38 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerTooLarge
      * @param string $content
+     * @param string $encoding
+     * @param int $characters
      * @medium Expect tests to take >1 but <10
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Message size exceeds maximum
      */
-    public function testTooLarge($content)
+    public function testTooLarge($content, $encoding, $characters)
     {
-        new SmsLength($content);
+        $size = new SmsLength($content);
+
+        $this->assertSame($encoding, $size->getEncoding());
+        $this->assertSame($characters, $size->getSize());
+
+        // Trigger exception
+        $size->getMessageCount();
     }
 
     public function providerTooLarge()
     {
-        // 7-bit max is 39,015 (255 * 153)
-        // ucs-2 max is 17,085 (255 * 67)
+        // 7-bit max is 39015 (255 * 153)
+        // ucs-2 max is 17085 (255 * 67)
         return [
             // long 7-bit, 10 * 3902 = 39020
-            [str_repeat('simple msg', 3902)],
+            [str_repeat('simple msg', 3902), '7-bit', 39020],
 
             // long 7-bit extended, 18 * 2168 = 39024
-            [str_repeat(self::GSM0338_EXTENDED, 2168)],
+            [str_repeat(self::GSM0338_EXTENDED, 2168), '7-bit', 39024],
 
-            // long UCS-2 single, 17 * 1006 = 17,102
-            // long UCS-2 double, 18 * 950 = 17,100
-            [str_repeat("simple msg plus •", 1006)],
-            [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950)]
+            // long UCS-2 single, 17 * 1006 = 17102
+            // long UCS-2 double, 18 * 950 = 17100
+            [str_repeat("simple msg plus •", 1006), 'ucs-2', 17102],
+            [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950), 'ucs-2', 17100]
         ];
     }
 }
