@@ -115,14 +115,9 @@ class SmsLength
      * Get number of messages that would be used to send the given content size
      *
      * @return int
-     * @throws InvalidArgumentException
      */
     public function getMessageCount()
     {
-        if ($this->messageCount > self::MAXIMUM_CONCATENATED_SMS) {
-            throw new InvalidArgumentException('Message size exceeds maximum');
-        }
-
         return $this->messageCount;
     }
 
@@ -145,6 +140,21 @@ class SmsLength
         }
 
         return $this->messageCount * $concat;
+    }
+
+    /**
+     * Check the message content is valid for an SMS
+     *
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    public function validate()
+    {
+        if ($this->messageCount > self::MAXIMUM_CONCATENATED_SMS) {
+            throw new InvalidArgumentException('Message count cannot exceed ' . self::MAXIMUM_CONCATENATED_SMS);
+        }
+
+        return true;
     }
 
     /**
