@@ -97,7 +97,7 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
      * @param int $upperBreak
      * @medium Expect tests to take >1 but <10
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Message size exceeds maximum
+     * @expectedExceptionMessage Message count cannot exceed 255
      */
     public function testTooLarge($content, $encoding, $characters, $messageCount, $upperBreak)
     {
