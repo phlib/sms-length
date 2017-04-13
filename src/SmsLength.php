@@ -143,6 +143,21 @@ class SmsLength
     }
 
     /**
+     * Check the message content is valid for an SMS
+     *
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    public function validate()
+    {
+        if ($this->messageCount > self::MAXIMUM_CONCATENATED_SMS) {
+            throw new InvalidArgumentException('Message count cannot exceed ' . self::MAXIMUM_CONCATENATED_SMS);
+        }
+
+        return true;
+    }
+
+    /**
      * Parse content to discover size characteristics
      *
      * @param string $messageContent
@@ -195,10 +210,6 @@ class SmsLength
         $this->messageCount = 1;
         if ($this->size > $singleSize) {
             $this->messageCount = (int)ceil($this->size / $concatSize);
-        }
-
-        if ($this->messageCount > self::MAXIMUM_CONCATENATED_SMS) {
-            throw new InvalidArgumentException('Message size exceeds maximum');
         }
     }
 }
