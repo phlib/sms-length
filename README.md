@@ -20,6 +20,7 @@ Simple string which fits within GSM 03.38 7-bit alphabet:
 
 ```php
 $smsLength = new \Phlib\SmsLength\SmsLength('simple message');
+$smsLength->validate(); // Throw exceptions for any validation failures
 $smsLength->getSize(); // 14
 $smsLength->getEncoding(); // '7-bit'
 $smsLength->getMessageCount(); // 1
@@ -30,6 +31,7 @@ Message which contains characters forcing switch to using GSM 03.38 UCS-2:
 
 ```php
 $smsLength = new \Phlib\SmsLength\SmsLength('message with • char requiring UCS-2');
+$smsLength->validate(); // Throw exceptions for any validation failures
 $smsLength->getSize(); // 35
 $smsLength->getEncoding(); // 'ucs-2'
 $smsLength->getMessageCount(); // 1
