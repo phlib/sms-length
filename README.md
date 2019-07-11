@@ -54,11 +54,11 @@ indicate pricing.
 
 The unit tests and inspections made by this package are based on
 [GSM 03.38 / 3GPP 23.038](https://en.wikipedia.org/wiki/GSM_03.38) for encoding
-and [GSM 03.40 / 3GPP 23.040](https://en.wikipedia.org/wiki/GSM_03.38) for
+and [GSM 03.40 / 3GPP 23.040](https://en.wikipedia.org/wiki/GSM_03.40) for
 [concatenated SMS](https://en.wikipedia.org/wiki/Concatenated_SMS). We have also
 referred to documentation provided by third-party SMS gateway providers such as
-[MessageBird](http://support.messagebird.com/hc/en-us/articles/208739745-How-long-can-a-text-message-be-)
-and [Messente](http://messente.com/documentation/tools/sms-length-calculator).
+[MessageBird](https://support.messagebird.com/hc/en-us/articles/208739745-How-long-can-a-text-message-be-)
+and [Messente](https://messente.com/documentation/tools/sms-length-calculator).
 
 ## License
 
