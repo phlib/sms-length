@@ -84,7 +84,22 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
             [str_repeat("exact•max", 67), 'ucs-2', 603, 9, 603],
 
             // empty
-            ['', '7-bit', 0, 1, 160]
+            ['', '7-bit', 0, 1, 160],
+
+            [
+                'The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown f[x jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the.',
+                '7-bit',
+                306,
+                3,
+                459,
+            ],
+            [
+                str_repeat('🌐', 67),
+                'ucs-2',
+                134,
+                3,
+                201
+            ],
         ];
     }
 
