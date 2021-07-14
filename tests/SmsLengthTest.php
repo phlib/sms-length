@@ -90,17 +90,19 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider providerTooLarge
+     *
      * @param string $content
      * @param string $encoding
      * @param int $characters
      * @param int $messageCount
      * @param int $upperBreak
+     *
      * @medium Expect tests to take >1 but <10
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Message count cannot exceed 255
      */
     public function testTooLarge($content, $encoding, $characters, $messageCount, $upperBreak)
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Message count cannot exceed 255");
         $size = new SmsLength($content);
 
         $this->assertSame($encoding, $size->getEncoding());
@@ -127,6 +129,65 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
             // long UCS-2 double, 18 * 950 = 17100
             [str_repeat("simple msg plus •", 1006), 'ucs-2', 17102, 256, 17152],
             [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950), 'ucs-2', 17100, 256, 17152]
+        ];
+    }
+
+    /**
+     * @dataProvider providerTruncate
+     */
+    public function testTruncate($content, $parts, $expected)
+    {
+        $original = new SmsLength($content);
+
+        $new = $original->truncate($parts);
+
+        $this->assertSame($parts, $new->getMessageCount());
+        $this->assertSame($expected, $new->getMessageContent());
+    }
+
+    public function providerTruncate()
+    {
+        return [
+            'message under one part' => [
+                'message' => 'La La La',
+                'parts' => 1,
+                'expected' => 'La La La',
+            ],
+            'message over one part, gsm7' => [
+                'message' => str_repeat('abcd', 45),
+                'parts' => 1,
+                'expected' => str_repeat('abcd', 40),
+            ],
+            'message over two part, gsm7' => [
+                'message' => str_repeat('abcd', 100),
+                'parts' => 2,
+                'expected' => str_repeat('abcd', 76) . 'ab',
+            ],
+            'message over one part, gsm7 + ext' => [
+                'message' => str_repeat('abcd[', 30),
+                'parts' => 1,
+                'expected' => str_repeat('abcd[', 26) . 'abcd', // each part is 6 chars, should be 26 reps + 4 chars leftover
+            ],
+            'message over one part, uc2 1 part char' => [
+                'message' => str_repeat('•', 100),
+                'parts' => 1,
+                'expected' => str_repeat('•', 70),
+            ],
+            'message over one part, uc2 3 byte' => [
+                'message' => str_repeat('⏩', 100),
+                'parts' => 1,
+                'expected' => str_repeat('⏩', 70),
+            ],
+            'message over one part, uc2 4 byte' => [
+                'message' => str_repeat('🌐', 100),
+                'parts' => 1,
+                'expected' => str_repeat('🌐', 35),
+            ],
+            'message over two parts, uc2 4 byte' => [
+                'message' => str_repeat('🌐', 200),
+                'parts' => 2,
+                'expected' => str_repeat('🌐', 66),
+            ]
         ];
     }
 }
