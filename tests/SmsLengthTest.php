@@ -11,7 +11,7 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
      * @var string[] Printable characters in GSM 03.38 7-bit default alphabet
      *               0x1B deliberately excluded as it's used to escape to extension table
      */
-    const GSM0338_BASIC =
+    private const GSM0338_BASIC =
         '@'  . 'Δ' . ' ' . '0' . '¡' . 'P' . '¿' . 'p' .
         '£'  . '_' . '!' . '1' . 'A' . 'Q' . 'a' . 'q' .
         '$'  . 'Φ' . '"' . '2' . 'B' . 'R' . 'b' . 'r' .
@@ -34,7 +34,7 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
      * @see https://en.wikipedia.org/wiki/GSM_03.38
      * @var string[] Printable characters in GSM 03.38 7-bit extension table
      */
-    const GSM0338_EXTENDED = '|^€{}[~]\\';
+    private const GSM0338_EXTENDED = '|^€{}[~]\\';
 
     /**
      * @dataProvider providerSize
@@ -48,12 +48,12 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
     {
         $size = new SmsLength($content);
 
-        $this->assertSame($encoding, $size->getEncoding());
-        $this->assertSame($characters, $size->getSize());
-        $this->assertSame($messageCount, $size->getMessageCount());
-        $this->assertSame($upperBreak, $size->getUpperBreakpoint());
+        static::assertSame($encoding, $size->getEncoding());
+        static::assertSame($characters, $size->getSize());
+        static::assertSame($messageCount, $size->getMessageCount());
+        static::assertSame($upperBreak, $size->getUpperBreakpoint());
 
-        $this->assertTrue($size->validate());
+        static::assertTrue($size->validate());
     }
 
     public function providerSize()
@@ -79,12 +79,12 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
             [str_repeat(self::GSM0338_EXTENDED, 76), '7-bit', 1368, 9, 1377],
 
             // long UCS-2
-            [str_repeat("simple msg plus •", 20), 'ucs-2', 340, 6, 402],
+            [str_repeat('simple msg plus •', 20), 'ucs-2', 340, 6, 402],
             [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 20), 'ucs-2', 360, 6, 402],
-            [str_repeat("exact•max", 67), 'ucs-2', 603, 9, 603],
+            [str_repeat('exact•max', 67), 'ucs-2', 603, 9, 603],
 
             // empty
-            ['', '7-bit', 0, 1, 160]
+            ['', '7-bit', 0, 1, 160],
         ];
     }
 
@@ -103,10 +103,10 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
     {
         $size = new SmsLength($content);
 
-        $this->assertSame($encoding, $size->getEncoding());
-        $this->assertSame($characters, $size->getSize());
-        $this->assertSame($messageCount, $size->getMessageCount());
-        $this->assertSame($upperBreak, $size->getUpperBreakpoint());
+        static::assertSame($encoding, $size->getEncoding());
+        static::assertSame($characters, $size->getSize());
+        static::assertSame($messageCount, $size->getMessageCount());
+        static::assertSame($upperBreak, $size->getUpperBreakpoint());
 
         // Trigger exception
         $size->validate();
@@ -125,8 +125,8 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
 
             // long UCS-2 single, 17 * 1006 = 17102
             // long UCS-2 double, 18 * 950 = 17100
-            [str_repeat("simple msg plus •", 1006), 'ucs-2', 17102, 256, 17152],
-            [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950), 'ucs-2', 17100, 256, 17152]
+            [str_repeat('simple msg plus •', 1006), 'ucs-2', 17102, 256, 17152],
+            [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950), 'ucs-2', 17100, 256, 17152],
         ];
     }
 }

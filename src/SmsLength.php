@@ -13,57 +13,57 @@ class SmsLength
     /**
      * @var int Maximum characters in SMS with 7-bit encoding (3GPP TS 23.038 / GSM 03.38)
      */
-    const MAXIMUM_CHARACTERS_7BIT_SINGLE = 160;
+    public const MAXIMUM_CHARACTERS_7BIT_SINGLE = 160;
 
     /**
      * @var int Maximum characters in SMS with 7-bit encoding with UDH (3GPP TS 23.040)
      */
-    const MAXIMUM_CHARACTERS_7BIT_CONCATENATED = 153;
+    public const MAXIMUM_CHARACTERS_7BIT_CONCATENATED = 153;
 
     /**
      * @var int Maximum characters in SMS with UCS-2 encoding (3GPP TS 23.038 / GSM 03.38)
      */
-    const MAXIMUM_CHARACTERS_UCS2_SINGLE = 70;
+    public const MAXIMUM_CHARACTERS_UCS2_SINGLE = 70;
 
     /**
      * @var int Maximum characters in SMS with UCS-2 encoding with UDH (3GPP TS 23.040)
      */
-    const MAXIMUM_CHARACTERS_UCS2_CONCATENATED = 67;
+    public const MAXIMUM_CHARACTERS_UCS2_CONCATENATED = 67;
 
     /**
      * @var int Message cannot exceed size of 255 concatenated SMS (3GPP TS 23.040)
      */
-    const MAXIMUM_CONCATENATED_SMS = 255;
+    public const MAXIMUM_CONCATENATED_SMS = 255;
 
     /**
      * @see https://en.wikipedia.org/wiki/GSM_03.38
      * @var string[] Printable characters in GSM 03.38 7-bit default alphabet
      *               0x1B deliberately excluded as it's used to escape to extension table
      */
-    const GSM0338_BASIC = [
-        '@'  , 'Δ' , ' ' , '0' , '¡' , 'P' , '¿' , 'p' ,
-        '£'  , '_' , '!' , '1' , 'A' , 'Q' , 'a' , 'q' ,
-        '$'  , 'Φ' , '"' , '2' , 'B' , 'R' , 'b' , 'r' ,
-        '¥'  , 'Γ' , '#' , '3' , 'C' , 'S' , 'c' , 's' ,
-        'è'  , 'Λ' , '¤' , '4' , 'D' , 'T' , 'd' , 't' ,
-        'é'  , 'Ω' , '%' , '5' , 'E' , 'U' , 'e' , 'u' ,
-        'ù'  , 'Π' , '&' , '6' , 'F' , 'V' , 'f' , 'v' ,
-        'ì'  , 'Ψ' , "'" , '7' , 'G' , 'W' , 'g' , 'w' ,
-        'ò'  , 'Σ' , '(' , '8' , 'H' , 'X' , 'h' , 'x' ,
-        'Ç'  , 'Θ' , ')' , '9' , 'I' , 'Y' , 'i' , 'y' ,
-        "\n" , 'Ξ' , '*' , ':' , 'J' , 'Z' , 'j' , 'z' ,
-        'Ø'        , '+' , ';' , 'K' , 'Ä' , 'k' , 'ä' ,
-        'ø'  , 'Æ' , ',' , '<' , 'L' , 'Ö' , 'l' , 'ö' ,
-        "\r" , 'æ' , '-' , '=' , 'M' , 'Ñ' , 'm' , 'ñ' ,
-        'Å'  , 'ß' , '.' , '>' , 'N' , 'Ü' , 'n' , 'ü' ,
-        'å'  , 'É' , '/' , '?' , 'O' , '§' , 'o' , 'à'
+    private const GSM0338_BASIC = [
+        '@' , 'Δ', ' ', '0', '¡', 'P', '¿', 'p',
+        '£' , '_', '!', '1', 'A', 'Q', 'a', 'q',
+        '$' , 'Φ', '"', '2', 'B', 'R', 'b', 'r',
+        '¥' , 'Γ', '#', '3', 'C', 'S', 'c', 's',
+        'è' , 'Λ', '¤', '4', 'D', 'T', 'd', 't',
+        'é' , 'Ω', '%', '5', 'E', 'U', 'e', 'u',
+        'ù' , 'Π', '&', '6', 'F', 'V', 'f', 'v',
+        'ì' , 'Ψ', "'", '7', 'G', 'W', 'g', 'w',
+        'ò' , 'Σ', '(', '8', 'H', 'X', 'h', 'x',
+        'Ç' , 'Θ', ')', '9', 'I', 'Y', 'i', 'y',
+        "\n", 'Ξ', '*', ':', 'J', 'Z', 'j', 'z',
+        'Ø'      , '+', ';', 'K', 'Ä', 'k', 'ä',
+        'ø' , 'Æ', ',', '<', 'L', 'Ö', 'l', 'ö',
+        "\r", 'æ', '-', '=', 'M', 'Ñ', 'm', 'ñ',
+        'Å' , 'ß', '.', '>', 'N', 'Ü', 'n', 'ü',
+        'å' , 'É', '/', '?', 'O', '§', 'o', 'à',
     ];
 
     /**
      * @see https://en.wikipedia.org/wiki/GSM_03.38
      * @var string[] Printable characters in GSM 03.38 7-bit extension table
      */
-    const GSM0338_EXTENDED = ['|', '^', '€', '{', '}', '[', '~', ']', '\\'];
+    private const GSM0338_EXTENDED = ['|', '^', '€', '{', '}', '[', '~', ']', '\\'];
 
     /**
      * @var string
