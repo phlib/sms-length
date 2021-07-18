@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\SmsLength;
 
 use Phlib\SmsLength\Exception\InvalidArgumentException;
@@ -13,57 +15,57 @@ class SmsLength
     /**
      * @var int Maximum characters in SMS with 7-bit encoding (3GPP TS 23.038 / GSM 03.38)
      */
-    const MAXIMUM_CHARACTERS_7BIT_SINGLE = 160;
+    public const MAXIMUM_CHARACTERS_7BIT_SINGLE = 160;
 
     /**
      * @var int Maximum characters in SMS with 7-bit encoding with UDH (3GPP TS 23.040)
      */
-    const MAXIMUM_CHARACTERS_7BIT_CONCATENATED = 153;
+    public const MAXIMUM_CHARACTERS_7BIT_CONCATENATED = 153;
 
     /**
      * @var int Maximum characters in SMS with UCS-2 encoding (3GPP TS 23.038 / GSM 03.38)
      */
-    const MAXIMUM_CHARACTERS_UCS2_SINGLE = 70;
+    public const MAXIMUM_CHARACTERS_UCS2_SINGLE = 70;
 
     /**
      * @var int Maximum characters in SMS with UCS-2 encoding with UDH (3GPP TS 23.040)
      */
-    const MAXIMUM_CHARACTERS_UCS2_CONCATENATED = 67;
+    public const MAXIMUM_CHARACTERS_UCS2_CONCATENATED = 67;
 
     /**
      * @var int Message cannot exceed size of 255 concatenated SMS (3GPP TS 23.040)
      */
-    const MAXIMUM_CONCATENATED_SMS = 255;
+    public const MAXIMUM_CONCATENATED_SMS = 255;
 
     /**
      * @see https://en.wikipedia.org/wiki/GSM_03.38
      * @var string[] Printable characters in GSM 03.38 7-bit default alphabet
      *               0x1B deliberately excluded as it's used to escape to extension table
      */
-    const GSM0338_BASIC = [
-        '@'  , 'Δ' , ' ' , '0' , '¡' , 'P' , '¿' , 'p' ,
-        '£'  , '_' , '!' , '1' , 'A' , 'Q' , 'a' , 'q' ,
-        '$'  , 'Φ' , '"' , '2' , 'B' , 'R' , 'b' , 'r' ,
-        '¥'  , 'Γ' , '#' , '3' , 'C' , 'S' , 'c' , 's' ,
-        'è'  , 'Λ' , '¤' , '4' , 'D' , 'T' , 'd' , 't' ,
-        'é'  , 'Ω' , '%' , '5' , 'E' , 'U' , 'e' , 'u' ,
-        'ù'  , 'Π' , '&' , '6' , 'F' , 'V' , 'f' , 'v' ,
-        'ì'  , 'Ψ' , "'" , '7' , 'G' , 'W' , 'g' , 'w' ,
-        'ò'  , 'Σ' , '(' , '8' , 'H' , 'X' , 'h' , 'x' ,
-        'Ç'  , 'Θ' , ')' , '9' , 'I' , 'Y' , 'i' , 'y' ,
-        "\n" , 'Ξ' , '*' , ':' , 'J' , 'Z' , 'j' , 'z' ,
-        'Ø'        , '+' , ';' , 'K' , 'Ä' , 'k' , 'ä' ,
-        'ø'  , 'Æ' , ',' , '<' , 'L' , 'Ö' , 'l' , 'ö' ,
-        "\r" , 'æ' , '-' , '=' , 'M' , 'Ñ' , 'm' , 'ñ' ,
-        'Å'  , 'ß' , '.' , '>' , 'N' , 'Ü' , 'n' , 'ü' ,
-        'å'  , 'É' , '/' , '?' , 'O' , '§' , 'o' , 'à'
+    private const GSM0338_BASIC = [
+        '@' , 'Δ', ' ', '0', '¡', 'P', '¿', 'p',
+        '£' , '_', '!', '1', 'A', 'Q', 'a', 'q',
+        '$' , 'Φ', '"', '2', 'B', 'R', 'b', 'r',
+        '¥' , 'Γ', '#', '3', 'C', 'S', 'c', 's',
+        'è' , 'Λ', '¤', '4', 'D', 'T', 'd', 't',
+        'é' , 'Ω', '%', '5', 'E', 'U', 'e', 'u',
+        'ù' , 'Π', '&', '6', 'F', 'V', 'f', 'v',
+        'ì' , 'Ψ', "'", '7', 'G', 'W', 'g', 'w',
+        'ò' , 'Σ', '(', '8', 'H', 'X', 'h', 'x',
+        'Ç' , 'Θ', ')', '9', 'I', 'Y', 'i', 'y',
+        "\n", 'Ξ', '*', ':', 'J', 'Z', 'j', 'z',
+        'Ø'      , '+', ';', 'K', 'Ä', 'k', 'ä',
+        'ø' , 'Æ', ',', '<', 'L', 'Ö', 'l', 'ö',
+        "\r", 'æ', '-', '=', 'M', 'Ñ', 'm', 'ñ',
+        'Å' , 'ß', '.', '>', 'N', 'Ü', 'n', 'ü',
+        'å' , 'É', '/', '?', 'O', '§', 'o', 'à',
     ];
 
     /**
      * @see https://en.wikipedia.org/wiki/GSM_03.38
      * @var string[] Printable characters in GSM 03.38 7-bit extension table
      */
-    const GSM0338_EXTENDED = ['|', '^', '€', '{', '}', '[', '~', ']', '\\'];
+    private const GSM0338_EXTENDED = ['|', '^', '€', '{', '}', '[', '~', ']', '\\'];
 
     /**
      * @var string
@@ -81,12 +83,9 @@ class SmsLength
     private $messageCount;
 
     /**
-     * Constructor
-     *
      * @param string $messageContent SMS message content (UTF-8)
-     * @throws InvalidArgumentException
      */
-    public function __construct($messageContent)
+    public function __construct(string $messageContent)
     {
         $this->inspect($messageContent);
     }
@@ -96,37 +95,31 @@ class SmsLength
      *
      * @return string '7-bit' or 'ucs-2'
      */
-    public function getEncoding()
+    public function getEncoding(): string
     {
         return $this->encoding;
     }
 
     /**
      * Get size of message as characters used in the determined encoding
-     *
-     * @return int
      */
-    public function getSize()
+    public function getSize(): int
     {
         return $this->size;
     }
 
     /**
      * Get number of messages that would be used to send the given content size
-     *
-     * @return int
      */
-    public function getMessageCount()
+    public function getMessageCount(): int
     {
         return $this->messageCount;
     }
 
     /**
      * Get upper breakpoint for the current message count
-     *
-     * @return int
      */
-    public function getUpperBreakpoint()
+    public function getUpperBreakpoint(): int
     {
         $single = self::MAXIMUM_CHARACTERS_7BIT_SINGLE;
         $concat = self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED;
@@ -144,11 +137,8 @@ class SmsLength
 
     /**
      * Check the message content is valid for an SMS
-     *
-     * @return bool
-     * @throws InvalidArgumentException
      */
-    public function validate()
+    public function validate(): bool
     {
         if ($this->messageCount > self::MAXIMUM_CONCATENATED_SMS) {
             throw new InvalidArgumentException('Message count cannot exceed ' . self::MAXIMUM_CONCATENATED_SMS);
@@ -159,11 +149,8 @@ class SmsLength
 
     /**
      * Parse content to discover size characteristics
-     *
-     * @param string $messageContent
-     * @throws InvalidArgumentException
      */
-    private function inspect($messageContent)
+    private function inspect(string $messageContent): void
     {
         // If it's not UTF-8, then it's broken
         if (!mb_check_encoding($messageContent, 'UTF-8')) {
@@ -178,9 +165,9 @@ class SmsLength
         $mbLength = mb_strlen($messageContent, 'UTF-8');
         for ($i = 0; $i < $mbLength; $i++) {
             $char = mb_substr($messageContent, $i, 1, 'UTF-8');
-            if (in_array($char, self::GSM0338_BASIC)) {
+            if (in_array($char, self::GSM0338_BASIC, true)) {
                 $this->size++;
-            } elseif (in_array($char, self::GSM0338_EXTENDED)) {
+            } elseif (in_array($char, self::GSM0338_EXTENDED, true)) {
                 $this->size += 2;
             } else {
                 $this->encoding = 'ucs-2';
