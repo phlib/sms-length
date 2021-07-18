@@ -87,7 +87,7 @@ class SmsLengthTest extends TestCase
             'long-ucs-exact' => [str_repeat('exact•max', 67), 'ucs-2', 603, 9, 603],
 
             // empty
-            'empty' => ['', '7-bit', 0, 1, 160],
+            'empty messages' => ['', '7-bit', 0, 1, 160],
 
             'test length calculates correctly when a GSM extended char straddles two messages' => [
                 'The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown f[x jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the.',
