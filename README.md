@@ -10,7 +10,7 @@ Calculate SMS GSM 03.38 message encoding and length, and number of concatenated 
 
 ## Installation
 
-```php
+```sh
 composer require phlib/sms-length
 ```
 
