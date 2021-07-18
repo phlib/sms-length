@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\SmsLength;
 
 use Phlib\SmsLength\Exception\InvalidArgumentException;
@@ -38,14 +40,14 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider providerSize
-     * @param string $content
-     * @param string $encoding
-     * @param int $characters
-     * @param int $messageCount
-     * @param int $upperBreak
      */
-    public function testSize($content, $encoding, $characters, $messageCount, $upperBreak)
-    {
+    public function testSize(
+        string $content,
+        string $encoding,
+        int $characters,
+        int $messageCount,
+        int $upperBreak
+    ): void {
         $size = new SmsLength($content);
 
         static::assertSame($encoding, $size->getEncoding());
@@ -56,7 +58,7 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
         static::assertTrue($size->validate());
     }
 
-    public function providerSize()
+    public function providerSize(): array
     {
         return [
             'gsm-basic' => [self::GSM0338_BASIC, '7-bit', 127, 1, 160],
@@ -90,17 +92,17 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider providerTooLarge
-     * @param string $content
-     * @param string $encoding
-     * @param int $characters
-     * @param int $messageCount
-     * @param int $upperBreak
      * @medium Expect tests to take >1 but <10
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Message count cannot exceed 255
      */
-    public function testTooLarge($content, $encoding, $characters, $messageCount, $upperBreak)
-    {
+    public function testTooLarge(
+        string $content,
+        string $encoding,
+        int $characters,
+        int $messageCount,
+        int $upperBreak
+    ): void {
         $size = new SmsLength($content);
 
         static::assertSame($encoding, $size->getEncoding());
@@ -112,7 +114,7 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
         $size->validate();
     }
 
-    public function providerTooLarge()
+    public function providerTooLarge(): array
     {
         // 7-bit max is 39015 (255 * 153)
         // ucs-2 max is 17085 (255 * 67)

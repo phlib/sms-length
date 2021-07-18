@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\SmsLength;
 
 use Phlib\SmsLength\Exception\InvalidArgumentException;
@@ -81,12 +83,9 @@ class SmsLength
     private $messageCount;
 
     /**
-     * Constructor
-     *
      * @param string $messageContent SMS message content (UTF-8)
-     * @throws InvalidArgumentException
      */
-    public function __construct($messageContent)
+    public function __construct(string $messageContent)
     {
         $this->inspect($messageContent);
     }
@@ -96,37 +95,31 @@ class SmsLength
      *
      * @return string '7-bit' or 'ucs-2'
      */
-    public function getEncoding()
+    public function getEncoding(): string
     {
         return $this->encoding;
     }
 
     /**
      * Get size of message as characters used in the determined encoding
-     *
-     * @return int
      */
-    public function getSize()
+    public function getSize(): int
     {
         return $this->size;
     }
 
     /**
      * Get number of messages that would be used to send the given content size
-     *
-     * @return int
      */
-    public function getMessageCount()
+    public function getMessageCount(): int
     {
         return $this->messageCount;
     }
 
     /**
      * Get upper breakpoint for the current message count
-     *
-     * @return int
      */
-    public function getUpperBreakpoint()
+    public function getUpperBreakpoint(): int
     {
         $single = self::MAXIMUM_CHARACTERS_7BIT_SINGLE;
         $concat = self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED;
@@ -144,11 +137,8 @@ class SmsLength
 
     /**
      * Check the message content is valid for an SMS
-     *
-     * @return bool
-     * @throws InvalidArgumentException
      */
-    public function validate()
+    public function validate(): bool
     {
         if ($this->messageCount > self::MAXIMUM_CONCATENATED_SMS) {
             throw new InvalidArgumentException('Message count cannot exceed ' . self::MAXIMUM_CONCATENATED_SMS);
@@ -159,11 +149,8 @@ class SmsLength
 
     /**
      * Parse content to discover size characteristics
-     *
-     * @param string $messageContent
-     * @throws InvalidArgumentException
      */
-    private function inspect($messageContent)
+    private function inspect(string $messageContent): void
     {
         // If it's not UTF-8, then it's broken
         if (!mb_check_encoding($messageContent, 'UTF-8')) {
@@ -178,9 +165,9 @@ class SmsLength
         $mbLength = mb_strlen($messageContent, 'UTF-8');
         for ($i = 0; $i < $mbLength; $i++) {
             $char = mb_substr($messageContent, $i, 1, 'UTF-8');
-            if (in_array($char, self::GSM0338_BASIC)) {
+            if (in_array($char, self::GSM0338_BASIC, true)) {
                 $this->size++;
-            } elseif (in_array($char, self::GSM0338_EXTENDED)) {
+            } elseif (in_array($char, self::GSM0338_EXTENDED, true)) {
                 $this->size += 2;
             } else {
                 $this->encoding = 'ucs-2';
