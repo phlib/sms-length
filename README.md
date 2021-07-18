@@ -1,10 +1,10 @@
 # phlib/sms-length
 
-[![Build Status](https://img.shields.io/travis/phlib/sms-length/master.svg?style=flat-square)](https://travis-ci.org/phlib/sms-length)
-[![Codecov](https://img.shields.io/codecov/c/github/phlib/sms-length.svg?style=flat-square)](https://codecov.io/gh/phlib/sms-length)
-[![Latest Stable Version](https://img.shields.io/packagist/v/phlib/sms-length.svg?style=flat-square)](https://packagist.org/packages/phlib/sms-length)
-[![Total Downloads](https://img.shields.io/packagist/dt/phlib/sms-length.svg?style=flat-square)](https://packagist.org/packages/phlib/sms-length)
-![Licence](https://img.shields.io/github/license/phlib/sms-length.svg?style=flat-square)
+[![Code Checks](https://img.shields.io/github/workflow/status/phlib/sms-length/CodeChecks?logo=github)](https://github.com/phlib/sms-length/actions/workflows/code-checks.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/phlib/sms-length.svg?logo=codecov)](https://codecov.io/gh/phlib/sms-length)
+[![Latest Stable Version](https://img.shields.io/packagist/v/phlib/sms-length.svg?logo=packagist)](https://packagist.org/packages/phlib/sms-length)
+[![Total Downloads](https://img.shields.io/packagist/dt/phlib/sms-length.svg?logo=packagist)](https://packagist.org/packages/phlib/sms-length)
+![Licence](https://img.shields.io/github/license/phlib/sms-length.svg)
 
 Calculate SMS GSM 03.38 message encoding and length, and number of concatenated SMS required
 
