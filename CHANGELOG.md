@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Add specific support for PHP v8
 - Type declarations have been added to all method parameters and return types.
 ### Removed
 - **BC break**: Removed support for PHP versions <= v7.2 as they are no longer
