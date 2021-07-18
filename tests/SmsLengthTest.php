@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Phlib\SmsLength;
 
 use Phlib\SmsLength\Exception\InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
-class SmsLengthTest extends \PHPUnit_Framework_TestCase
+class SmsLengthTest extends TestCase
 {
     /**
      * @see https://en.wikipedia.org/wiki/GSM_03.38
@@ -93,8 +94,6 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider providerTooLarge
      * @medium Expect tests to take >1 but <10
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Message count cannot exceed 255
      */
     public function testTooLarge(
         string $content,
@@ -103,6 +102,9 @@ class SmsLengthTest extends \PHPUnit_Framework_TestCase
         int $messageCount,
         int $upperBreak
     ): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Message count cannot exceed 255');
+
         $size = new SmsLength($content);
 
         static::assertSame($encoding, $size->getEncoding());
