@@ -89,19 +89,19 @@ class SmsLengthTest extends TestCase
             // empty
             'empty' => ['', '7-bit', 0, 1, 160],
 
-            [
+            'test length calculates correctly when a GSM extended char straddles two messages' => [
                 'The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown f[x jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the.',
                 '7-bit',
                 306,
                 3,
                 459,
             ],
-            [
+            'test length calculates correctly when a unicode char straddles two messages' => [
                 str_repeat('🌐', 67),
                 'ucs-2',
                 134,
                 3,
-                201
+                201,
             ],
         ];
     }
