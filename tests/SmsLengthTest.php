@@ -92,6 +92,58 @@ class SmsLengthTest extends TestCase
     }
 
     /**
+     * @dataProvider providerMessageParts
+     */
+    public function testDivideMessage(array $parts, int $characters): void {
+        $message = implode('', $parts);
+
+        $size = new SmsLength($message);
+
+        static::assertSame($parts, $size->getMessageParts());
+        static::assertCount(count($parts), $size->getMessageParts());
+        static::assertSame($characters, $size->getSize());
+    }
+
+    public function providerMessageParts(): array
+    {
+       return [
+           // 7-bit
+           'one-part-basic' => [[
+               1 => $this->getChars(self::GSM0338_BASIC, 160)
+           ], 160],
+           'two-parts-basic' => [[
+               1 => $this->getChars(self::GSM0338_BASIC, 153),
+               2 => $this->getChars(self::GSM0338_BASIC, 153)
+           ], 306],
+
+           // 7-bit extended
+           'one-part-extended' => [[
+               1 => $this->getChars(self::GSM0338_EXTENDED, 80)
+           ], 160],
+           'two-part-extended' => [[
+               1 => $this->getChars(self::GSM0338_BASIC, 153),
+               2 => $this->getChars(self::GSM0338_EXTENDED, 76)
+           ], 305],
+
+           // ucs-2
+           'one-part-ucs' => [[
+               1 => $this->getChars('simple msg plus •', 70)
+           ], 70],
+           'two-part-ucs' => [[
+               1 => $this->getChars('simple msg plus •', 67),
+               2 => $this->getChars('simple msg plus •', 67),
+           ], 134],
+           'one-part-ucs-double' => [[
+               1 => $this->getChars('simple msg plus ', 68) . "\xf0\x9f\x93\xb1",
+           ], 70],
+           'two-part-ucs-double' => [[
+               1 => $this->getChars('simple msg plus ', 65) . "\xf0\x9f\x93\xb1",
+               2 => $this->getChars('simple msg plus ', 65) . "\xf0\x9f\x93\xb1",
+           ], 134],
+        ];
+    }
+
+    /**
      * @dataProvider providerTooLarge
      * @medium Expect tests to take >1 but <10
      */
@@ -132,5 +184,18 @@ class SmsLengthTest extends TestCase
             'ucs-1' => [str_repeat('simple msg plus •', 1006), 'ucs-2', 17102, 256, 17152],
             'ucs-2' => [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950), 'ucs-2', 17100, 256, 17152],
         ];
+    }
+
+    /**
+     * Trims or extends the character set to the exact length
+     */
+    private function getChars(string $charSet, int $size): string
+    {
+        $chars = $charSet;
+        while (mb_strlen($chars, 'UTF-8') < $size) {
+            $chars .= $charSet;
+        }
+
+        return mb_substr($chars, 0, $size);
     }
 }
