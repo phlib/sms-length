@@ -80,11 +80,6 @@ class SmsLength
     /**
      * @var int
      */
-    private $padding;
-
-    /**
-     * @var int
-     */
     private $messageCount;
 
     /**
@@ -111,16 +106,6 @@ class SmsLength
     public function getSize(): int
     {
         return $this->size;
-    }
-
-    /**
-     * Get size of message padding used in the determined encoding
-     *
-     * @return int
-     */
-    public function getPadding()
-    {
-        return $this->padding;
     }
 
     /**
@@ -177,7 +162,6 @@ class SmsLength
         // Any character outside the 7-bit alphabet switches the entire encoding to UCS-2
         $this->encoding = '7-bit';
         $this->size = 0;
-        $this->padding = 0;
 
         $mbLength = mb_strlen($messageContent, 'UTF-8');
         for ($i = 0; $i < $mbLength; $i++) {
@@ -187,7 +171,7 @@ class SmsLength
             } elseif (in_array($char, self::GSM0338_EXTENDED, true)) {
                 // In cases where a double counted char straddles two messages, add padding to push it to the next part
                 if (($this->size + 2) % self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED === 1) {
-                    $this->padding++;
+                    $this->size++;
                 }
                 $this->size += 2;
             } else {
@@ -207,7 +191,7 @@ class SmsLength
 
                 // In cases where a double counted char straddles two messages, add padding to push it to the next part
                 if ($charSize > 1 && ($this->size + $charSize) % self::MAXIMUM_CHARACTERS_UCS2_CONCATENATED === 1) {
-                    $this->padding++;
+                    $this->size++;
                 }
 
                 $this->size += $charSize;
@@ -222,11 +206,9 @@ class SmsLength
             $concatSize = self::MAXIMUM_CHARACTERS_UCS2_CONCATENATED;
         }
 
-        $sizeIncludingPadding = $this->size + $this->padding;
-
         $this->messageCount = 1;
         if ($this->size > $singleSize) {
-            $this->messageCount = (int)ceil($sizeIncludingPadding / $concatSize);
+            $this->messageCount = (int) ceil($this->size / $concatSize);
         }
     }
 }
