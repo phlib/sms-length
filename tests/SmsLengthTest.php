@@ -78,8 +78,8 @@ class SmsLengthTest extends TestCase
             'long-gsm-exact' => [str_repeat('exact max', 153), '7-bit', 1377, 9, 1377],
 
             // long 7-bit extended
-            'long-gsm-ex-1' => [str_repeat(self::GSM0338_EXTENDED, 40), '7-bit', 720, 5, 765],
-            'long-gsm-ex-2' => [str_repeat(self::GSM0338_EXTENDED, 76), '7-bit', 1368, 9, 1377],
+            'long-gsm-ex-1' => [str_repeat(self::GSM0338_EXTENDED, 40), '7-bit', 724, 5, 765],
+            'long-gsm-ex-2' => [str_repeat(self::GSM0338_EXTENDED, 76), '7-bit', 1376, 9, 1377],
 
             // long UCS-2
             'long-ucs-1' => [str_repeat('simple msg plus •', 20), 'ucs-2', 340, 6, 402],
@@ -87,7 +87,22 @@ class SmsLengthTest extends TestCase
             'long-ucs-exact' => [str_repeat('exact•max', 67), 'ucs-2', 603, 9, 603],
 
             // empty
-            'empty' => ['', '7-bit', 0, 1, 160],
+            'empty messages' => ['', '7-bit', 0, 1, 160],
+
+            'test length calculates correctly when a GSM extended char straddles two messages' => [
+                'The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown f[x jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the.',
+                '7-bit',
+                307,
+                3,
+                459,
+            ],
+            'test length calculates correctly when a unicode char straddles two messages' => [
+                str_repeat('🌐', 67),
+                'ucs-2',
+                136,
+                3,
+                201,
+            ],
         ];
     }
 

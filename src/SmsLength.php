@@ -162,12 +162,17 @@ class SmsLength
         // Any character outside the 7-bit alphabet switches the entire encoding to UCS-2
         $this->encoding = '7-bit';
         $this->size = 0;
+
         $mbLength = mb_strlen($messageContent, 'UTF-8');
         for ($i = 0; $i < $mbLength; $i++) {
             $char = mb_substr($messageContent, $i, 1, 'UTF-8');
             if (in_array($char, self::GSM0338_BASIC, true)) {
                 $this->size++;
             } elseif (in_array($char, self::GSM0338_EXTENDED, true)) {
+                // In cases where a double counted char straddles two messages, add padding to push it to the next part
+                if (($this->size + 2) % self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED === 1) {
+                    $this->size++;
+                }
                 $this->size += 2;
             } else {
                 $this->encoding = 'ucs-2';
@@ -182,7 +187,14 @@ class SmsLength
             for ($i = 0; $i < $mbLength; $i++) {
                 $char = mb_substr($messageContent, $i, 1, 'UTF-8');
                 $utf16Hex = bin2hex(mb_convert_encoding($char, 'UTF-16', 'UTF-8'));
-                $this->size += strlen($utf16Hex) / 4;
+                $charSize = strlen($utf16Hex) / 4;
+
+                // In cases where a double counted char straddles two messages, add padding to push it to the next part
+                if ($charSize > 1 && ($this->size + $charSize) % self::MAXIMUM_CHARACTERS_UCS2_CONCATENATED === 1) {
+                    $this->size++;
+                }
+
+                $this->size += $charSize;
             }
         }
 
@@ -196,7 +208,7 @@ class SmsLength
 
         $this->messageCount = 1;
         if ($this->size > $singleSize) {
-            $this->messageCount = (int)ceil($this->size / $concatSize);
+            $this->messageCount = (int) ceil($this->size / $concatSize);
         }
     }
 }
