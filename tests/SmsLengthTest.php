@@ -62,32 +62,32 @@ class SmsLengthTest extends TestCase
     public function providerSize(): array
     {
         return [
-            'gsm-basic' => [self::GSM0338_BASIC, '7-bit', 127, 1, 160],
-            'gsm-extended' => [self::GSM0338_EXTENDED, '7-bit', 18, 1, 160],
-            'simple-basic' => ['simple msg', '7-bit', 10, 1, 160],
-            'simple-extended' => ['simple msg plus € extended char', '7-bit', 32, 1, 160],
+            'gsm-basic' => [self::GSM0338_BASIC, SmsLength::FORMAT_7BIT, 127, 1, 160],
+            'gsm-extended' => [self::GSM0338_EXTENDED, SmsLength::FORMAT_7BIT, 18, 1, 160],
+            'simple-basic' => ['simple msg', SmsLength::FORMAT_7BIT, 10, 1, 160],
+            'simple-extended' => ['simple msg plus € extended char', SmsLength::FORMAT_7BIT, 32, 1, 160],
 
             // http://www.fileformat.info/info/unicode/char/2022/index.htm
-            'utf16-1' => ['simple msg plus • 1 UTF-16 code unit char', 'ucs-2', 41, 1, 70],
+            'utf16-1' => ['simple msg plus • 1 UTF-16 code unit char', SmsLength::FORMAT_UCS2, 41, 1, 70],
 
             // http://www.fileformat.info/info/unicode/char/1f4f1/index.htm
-            'utf16-2' => ["simple msg plus \xf0\x9f\x93\xb1 2 UTF-16 code unit char", 'ucs-2', 42, 1, 70],
+            'utf16-2' => ["simple msg plus \xf0\x9f\x93\xb1 2 UTF-16 code unit char", SmsLength::FORMAT_UCS2, 42, 1, 70],
 
             // long 7-bit
-            'long-gsm-simple' => [str_repeat('simple msg', 50), '7-bit', 500, 4, 612],
-            'long-gsm-exact' => [str_repeat('exact max', 153), '7-bit', 1377, 9, 1377],
+            'long-gsm-simple' => [str_repeat('simple msg', 50), SmsLength::FORMAT_7BIT, 500, 4, 612],
+            'long-gsm-exact' => [str_repeat('exact max', 153), SmsLength::FORMAT_7BIT, 1377, 9, 1377],
 
             // long 7-bit extended
-            'long-gsm-ex-1' => [str_repeat(self::GSM0338_EXTENDED, 40), '7-bit', 720, 5, 765],
-            'long-gsm-ex-2' => [str_repeat(self::GSM0338_EXTENDED, 76), '7-bit', 1368, 9, 1377],
+            'long-gsm-ex-1' => [str_repeat(self::GSM0338_EXTENDED, 40), SmsLength::FORMAT_7BIT, 720, 5, 765],
+            'long-gsm-ex-2' => [str_repeat(self::GSM0338_EXTENDED, 76), SmsLength::FORMAT_7BIT, 1368, 9, 1377],
 
             // long UCS-2
-            'long-ucs-1' => [str_repeat('simple msg plus •', 20), 'ucs-2', 340, 6, 402],
-            'long-ucs-2' => [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 20), 'ucs-2', 360, 6, 402],
-            'long-ucs-exact' => [str_repeat('exact•max', 67), 'ucs-2', 603, 9, 603],
+            'long-ucs-1' => [str_repeat('simple msg plus •', 20), SmsLength::FORMAT_UCS2, 340, 6, 402],
+            'long-ucs-2' => [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 20), SmsLength::FORMAT_UCS2, 360, 6, 402],
+            'long-ucs-exact' => [str_repeat('exact•max', 67), SmsLength::FORMAT_UCS2, 603, 9, 603],
 
             // empty
-            'empty' => ['', '7-bit', 0, 1, 160],
+            'empty' => ['', SmsLength::FORMAT_7BIT, 0, 1, 160],
         ];
     }
 
@@ -122,15 +122,15 @@ class SmsLengthTest extends TestCase
         // ucs-2 max is 17085 (255 * 67)
         return [
             // long 7-bit, 10 * 3902 = 39020
-            'basic' => [str_repeat('simple msg', 3902), '7-bit', 39020, 256, 39168],
+            'basic' => [str_repeat('simple msg', 3902), SmsLength::FORMAT_7BIT, 39020, 256, 39168],
 
             // long 7-bit extended, 18 * 2168 = 39024
-            'extended' => [str_repeat(self::GSM0338_EXTENDED, 2168), '7-bit', 39024, 256, 39168],
+            'extended' => [str_repeat(self::GSM0338_EXTENDED, 2168), SmsLength::FORMAT_7BIT, 39024, 256, 39168],
 
             // long UCS-2 single, 17 * 1006 = 17102
             // long UCS-2 double, 18 * 950 = 17100
-            'ucs-1' => [str_repeat('simple msg plus •', 1006), 'ucs-2', 17102, 256, 17152],
-            'ucs-2' => [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950), 'ucs-2', 17100, 256, 17152],
+            'ucs-1' => [str_repeat('simple msg plus •', 1006), SmsLength::FORMAT_UCS2, 17102, 256, 17152],
+            'ucs-2' => [str_repeat("simple msg plus \xf0\x9f\x93\xb1", 950), SmsLength::FORMAT_UCS2, 17100, 256, 17152],
         ];
     }
 }

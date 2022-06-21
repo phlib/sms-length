@@ -67,6 +67,9 @@ class SmsLength
      */
     private const GSM0338_EXTENDED = ['|', '^', '€', '{', '}', '[', '~', ']', '\\'];
 
+    const FORMAT_7BIT = '7-bit';
+    const FORMAT_UCS2 = 'ucs-2';
+
     /**
      * @var string
      */
@@ -123,7 +126,7 @@ class SmsLength
     {
         $single = self::MAXIMUM_CHARACTERS_7BIT_SINGLE;
         $concat = self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED;
-        if ($this->encoding === 'ucs-2') {
+        if ($this->encoding === self::FORMAT_UCS2) {
             $single = self::MAXIMUM_CHARACTERS_UCS2_SINGLE;
             $concat = self::MAXIMUM_CHARACTERS_UCS2_CONCATENATED;
         }
@@ -160,7 +163,7 @@ class SmsLength
         // Start counting characters in basic and extended
         // Extended chars count for two
         // Any character outside the 7-bit alphabet switches the entire encoding to UCS-2
-        $this->encoding = '7-bit';
+        $this->encoding = self::FORMAT_7BIT;
         $this->size = 0;
         $mbLength = mb_strlen($messageContent, 'UTF-8');
         for ($i = 0; $i < $mbLength; $i++) {
@@ -170,12 +173,12 @@ class SmsLength
             } elseif (in_array($char, self::GSM0338_EXTENDED, true)) {
                 $this->size += 2;
             } else {
-                $this->encoding = 'ucs-2';
+                $this->encoding = self::FORMAT_UCS2;
                 break;
             }
         }
 
-        if ($this->encoding === 'ucs-2') {
+        if ($this->encoding === self::FORMAT_UCS2) {
             // For UCS-2 need to iterate the characters again
             // Those with two UTF-16 code points consume two characters in the SMS
             $this->size = 0;
@@ -189,7 +192,7 @@ class SmsLength
         // Message Count: Each SMS is slightly shorter if concatenation is required
         $singleSize = self::MAXIMUM_CHARACTERS_7BIT_SINGLE;
         $concatSize = self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED;
-        if ($this->encoding === 'ucs-2') {
+        if ($this->encoding === self::FORMAT_UCS2) {
             $singleSize = self::MAXIMUM_CHARACTERS_UCS2_SINGLE;
             $concatSize = self::MAXIMUM_CHARACTERS_UCS2_CONCATENATED;
         }
