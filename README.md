@@ -1,6 +1,6 @@
 # phlib/sms-length
 
-[![Code Checks](https://img.shields.io/github/workflow/status/phlib/sms-length/CodeChecks?logo=github)](https://github.com/phlib/sms-length/actions/workflows/code-checks.yml)
+[![Code Checks](https://img.shields.io/github/actions/workflow/status/phlib/sms-length/code-checks.yml?logo=github)](https://github.com/phlib/sms-length/actions/workflows/code-checks.yml)
 [![Codecov](https://img.shields.io/codecov/c/github/phlib/sms-length.svg?logo=codecov)](https://codecov.io/gh/phlib/sms-length)
 [![Latest Stable Version](https://img.shields.io/packagist/v/phlib/sms-length.svg?logo=packagist)](https://packagist.org/packages/phlib/sms-length)
 [![Total Downloads](https://img.shields.io/packagist/dt/phlib/sms-length.svg?logo=packagist)](https://packagist.org/packages/phlib/sms-length)
