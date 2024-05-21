@@ -93,10 +93,21 @@ class SmsLength
     private $messageCount;
 
     /**
+     * @var string
+     */
+    private $messageContent;
+
+    /**
+     * @var null|array
+     */
+    private $messageParts;
+
+    /**
      * @param string $messageContent SMS message content (UTF-8)
      */
     public function __construct(string $messageContent)
     {
+        $this->messageContent = $messageContent;
         $this->inspect($messageContent);
     }
 
@@ -208,5 +219,75 @@ class SmsLength
         if ($this->size > $singleSize) {
             $this->messageCount = (int)ceil($this->size / $concatSize);
         }
+    }
+
+    /**
+     * Divide message to SMS parts indexed from 1
+     * @return array|string[]
+     */
+    public function getMessageParts(): array
+    {
+        if ($this->messageParts === null) {
+            if ($this->getMessageCount() === 1) {
+                $this->messageParts = [1 => $this->messageContent];
+            } elseif ($this->getEncoding() === '7-bit') {
+                $this->messageParts = $this->divide7bitMessage();
+            } else {
+                $this->messageParts = $this->divideUcs2Message();
+            }
+        }
+
+        return $this->messageParts;
+    }
+
+    private function divide7bitMessage(): array
+    {
+        $size = 0;
+        $actualPart = 1;
+        $parts[$actualPart] = ''; // Init first part
+
+        $mbLength = mb_strlen($this->messageContent, 'UTF-8');
+        for ($i = 0; $i < $mbLength; $i++) {
+            $char = mb_substr($this->messageContent, $i, 1, 'UTF-8');
+            if (in_array($char, self::GSM0338_BASIC, true)) {
+                $size++;
+            } else {
+                $size += 2;
+            }
+
+            // Init next part
+            if ($actualPart * self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED < $size) {
+                $actualPart++;
+                $parts[$actualPart] = '';
+            }
+
+            $parts[$actualPart] .= $char;
+        }
+        return $parts;
+    }
+
+    private function divideUcs2Message(): array
+    {
+        $size = 0;
+        $actualPart = 1;
+        $parts[$actualPart] = ''; // Init first part
+
+        $mbLength = mb_strlen($this->messageContent, 'UTF-8');
+        for ($i = 0; $i < $mbLength; $i++) {
+            $char = mb_substr($this->messageContent, $i, 1, 'UTF-8');
+            $utf16Hex = bin2hex(mb_convert_encoding($char, 'UTF-16', 'UTF-8'));
+            $charSize = strlen($utf16Hex) / 4;
+            $size += $charSize;
+
+            // Init next part
+            if ($actualPart * self::MAXIMUM_CHARACTERS_UCS2_CONCATENATED < $size) {
+                $actualPart++;
+                $parts[$actualPart] = '';
+            }
+
+            $parts[$actualPart] .= $char;
+        }
+
+        return $parts;
     }
 }
