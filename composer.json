@@ -27,5 +27,9 @@
         "psr-4": {
             "Phlib\\SmsLength\\": "tests/"
         }
+    },
+    "scripts": {
+        "check-cs": "vendor/bin/ecs check --ansi",
+        "fix-cs": "vendor/bin/ecs check --fix --ansi"
     }
 }
