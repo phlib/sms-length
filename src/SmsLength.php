@@ -93,10 +93,18 @@ class SmsLength
     private $messageCount;
 
     /**
+     * @var string
+     */
+    private $messageContent;
+
+    /**
      * @param string $messageContent SMS message content (UTF-8)
+     *
+     * @throws InvalidArgumentException
      */
     public function __construct(string $messageContent)
     {
+        $this->messageContent = $messageContent;
         $this->inspect($messageContent);
     }
 
@@ -124,6 +132,16 @@ class SmsLength
     public function getMessageCount(): int
     {
         return $this->messageCount;
+    }
+
+    /**
+     * Get number of message content
+     *
+     * @return string
+     */
+    public function getMessageContent()
+    {
+        return $this->messageContent;
     }
 
     /**
@@ -155,6 +173,86 @@ class SmsLength
         }
 
         return true;
+    }
+
+    /**
+     * Return a new instance with the message truncated to a set part count
+     *
+     * @param int $parts
+     *
+     * @return self
+     */
+    public function truncate($parts)
+    {
+        if ($this->messageCount <= $parts) {
+            return $this;
+        }
+
+        if ($this->encoding === '7-bit') {
+            return new self($this->truncate7Bit($this->messageContent, $parts));
+        }
+
+        return new self($this->truncateUcs2($this->messageContent, $parts));
+    }
+
+    private function truncate7Bit($message, $parts)
+    {
+        $size = 0;
+        $newMessage = '';
+
+        $mbLength = mb_strlen($message, 'UTF-8');
+
+        for ($i = 0; $i < $mbLength; $i++) {
+            $char = mb_substr($message, $i, 1, 'UTF-8');
+
+            if (in_array($char, self::GSM0338_BASIC)) {
+                $charSize = 1;
+            } elseif (in_array($char, self::GSM0338_EXTENDED)) {
+                $charSize = 2;
+            } else {
+                continue;
+            }
+
+            if ($parts === 1 && $size + $charSize > self::MAXIMUM_CHARACTERS_7BIT_SINGLE) {
+                return $newMessage;
+            }
+
+            if ($parts > 1 && $size + $charSize > $parts * self::MAXIMUM_CHARACTERS_7BIT_CONCATENATED) {
+                return $newMessage;
+            }
+
+            $size += $charSize;
+            $newMessage .= $char;
+        }
+
+        return $newMessage;
+    }
+
+    private function truncateUcs2($message, $parts)
+    {
+        $size = 0;
+        $newMessage = '';
+
+        $mbLength = mb_strlen($message, 'UTF-8');
+
+        for ($i = 0; $i < $mbLength; $i++) {
+            $char = mb_substr($message, $i, 1, 'UTF-8');
+            $utf16Hex = bin2hex(mb_convert_encoding($char, 'UTF-16', 'UTF-8'));
+            $charSize = strlen($utf16Hex) / 4;
+
+            if ($parts === 1 && $size + $charSize > self::MAXIMUM_CHARACTERS_UCS2_SINGLE) {
+                return $newMessage;
+            }
+
+            if ($parts > 1 && $size + $charSize >= $parts *  self::MAXIMUM_CHARACTERS_UCS2_CONCATENATED) {
+                return $newMessage;
+            }
+
+            $size += $charSize;
+            $newMessage .= $char;
+        }
+
+        return $newMessage;
     }
 
     /**
